@@ -1,6 +1,6 @@
 //Nico Williams and Brandon Rullamas
 //nijowill and brullama
-//Assignment 1 - String Set and PreProcessor
+//Assignment 2 - Lexical Analyzer using flex
 
 #ifndef __STRINGSET__
 #define __STRINGSET__
