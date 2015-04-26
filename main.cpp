@@ -18,6 +18,7 @@ using namespace std;
 #include "auxlib.h"
 
 
+extern FILE *yyin;
 const string CPP = "/usr/bin/cpp";
 const size_t LINESIZE = 1024;
 int exit_status = 0;
