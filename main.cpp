@@ -84,12 +84,12 @@ gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
       switch(opts){
     
         case 'l':
-          //yy_flex_debug = 1;
+          yy_flex_debug = 1;
 //          printf("case -L\n");
           break;
         
         case 'y':
-          //yydebug = 1;
+          yydebug = 1;
  //         printf("case -Y\n");
           break;
         
