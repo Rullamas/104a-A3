@@ -19,6 +19,7 @@ using namespace std;
 
 
 extern FILE *yyin;
+extern int yy_flex_debug
 const string CPP = "/usr/bin/cpp";
 const size_t LINESIZE = 1024;
 int exit_status = 0;
@@ -72,8 +73,7 @@ int main (int argc, char** argv) {
     string strFile;
 	int Dopts = 0;
 	int Dargs = 0;
-    //int yy_flex_debug = 0;
-    //int yydebug = 0;
+    yy_flex_debug = 0;
 /*Get options. code based off
 gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
 */
@@ -85,11 +85,11 @@ gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
     
         case 'l':
           yy_flex_debug = 1;
-//          printf("case -L\n");
+          //printf("case -L\n");
           break;
         
         case 'y':
-          yydebug = 1;
+          //yydebug = 1;
  //         printf("case -Y\n");
           break;
         
@@ -146,18 +146,19 @@ gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
 		command = CPP + " " + filename;
 	  }  
 //      printf ("command=\"%s\"\n", command.c_str());
-      FILE* pipe = popen (command.c_str(), "r");
-      if (pipe == NULL) {
+      yyin = popen (command.c_str(), "r");
+      if (yyin == NULL) {
          syserrprintf (command.c_str());
       }else {
-         cpplines (pipe, filename);
-         int pclose_rc = pclose (pipe);
-         eprint_status (command.c_str(), pclose_rc);
+         cpplines (yyin, filename);
+         //int pclose_rc = pclose (yyin);
+         //eprint_status (command.c_str(), pclose_rc);
       }
    } 
    outFile = fopen(strFile.c_str(),"w");
    dump_stringset(outFile);
    return get_exitstatus();
 }
+
 
 
