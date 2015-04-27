@@ -64,7 +64,6 @@ TOK_STRINGCON	(\"([^\\"\n]|\\[\\'"0nt])*\")
 {TOK_CHARCON}	{ return yylval_toekn (TOK_CHARCON); }
 {TOK_STRINGCON} { return yylval_token (TOK_STRINGCON); }
 {NUMBER}        { return yylval_token (NUMBER); }
-{TOK_IDENT}     { return yylval_token (TOK_IDENT); }
 
 
 "void"          { return yylval_token (TOK_VOID); }
@@ -85,7 +84,7 @@ TOK_STRINGCON	(\"([^\\"\n]|\\[\\'"0nt])*\")
 "new"           { return yylval_token (TOK_NEW); }
 
 "#".*           { scanner_include(); }
-[ \t]+          { }
+[ \t]+          { IGNORE (white space) }
 \n              { scanner_newline(); }
 
 {NOTNUMBER}     { scanner_badtoken (yytext);
