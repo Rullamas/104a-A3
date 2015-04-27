@@ -1,5 +1,8 @@
 %{
 // Dummy parser for scanner project.
+#include "lyutils.h"
+#include <assert.h>
+#include "astree.h"
 %}
 
 %debug
