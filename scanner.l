@@ -61,7 +61,7 @@ TOK_STRINGCON	(\"([^\\"\n]|\\[\\'"0nt])*\")
 "%"             { return yylval_token ('%'); }
 "!"             { return yylval_token ('!'); }
 {TOK_IDENT}		{ return yylval_token (TOK_IDENT); }
-{TOK_CHARCON}	{ return yylval_toekn (TOK_CHARCON); }
+{TOK_CHARCON}	{ return yylval_token (TOK_CHARCON); }
 {TOK_STRINGCON} { return yylval_token (TOK_STRINGCON); }
 {NUMBER}        { return yylval_token (NUMBER); }
 

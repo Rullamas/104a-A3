@@ -69,8 +69,6 @@ void cpplines (FILE* pipe, char* filename) {
 int main (int argc, char** argv) {
 
     int opts;
-    string base;
-    string strFile;
 	int Dopts = 0;
 	int Dargs = 0;
     yy_flex_debug = 0;
@@ -127,18 +125,22 @@ gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
         exit(exit_status);
     }
 
-
-    FILE * outFile;
+    string yyin_tmp;
+    string base;
+    string asg1;
+    string asg2;
+    FILE * strFile;
+    FILE * tokFile;
     set_execname (argv[0]);
     
    for (int argi = optind; argi < argc; ++argi) {
       char* filename = argv[argi]; 
-      base = remove_extension(filename);
+      base = remove_extension(filename); 
+      asg1 = base+".str";
+      asg2 = base+".tok";
+      strFile = fopen(asg1.c_str(), "w");
+      tokFile = fopen(asg2.c_str(), "w");
       
-//      std::cout << "The basename is: " << base <<"\n";
-      strFile = base+".str";
-//      std::cout << "The new file name is: " << strFile << "\n";  
-
 	  string command;
 	  if (Dopts) {
 		command = CPP + " " + argv[Dargs] + " " + filename;
@@ -147,18 +149,25 @@ gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
 	  }  
 //      printf ("command=\"%s\"\n", command.c_str());
       yyin = popen (command.c_str(), "r");
-      if (yyin == NULL) {
-         syserrprintf (command.c_str());
-      }else {
-         cpplines (yyin, filename);
-         //int pclose_rc = pclose (yyin);
-         //eprint_status (command.c_str(), pclose_rc);
+      if (pipe == NULL) {
+        syserrprintf (command.c_str());
+      }else{
+        for(;;){
+          int token = yylex();
+          if (token == YYEOF){
+            return;
+          } 
+        }
+        pclose(tokFile);
+      }
+        
+
+      //cpplines (pipe, filename);
+      int pclose_rc = pclose (yyin);
+      eprint_status (command.c_str(), pclose_rc);
       }
    } 
-   outFile = fopen(strFile.c_str(),"w");
-   dump_stringset(outFile);
+   dump_stringset(strFile);
+   pclose(strFile);
    return get_exitstatus();
 }
-
-
-
