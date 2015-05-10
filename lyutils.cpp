@@ -35,7 +35,7 @@ void lexer_setecho (bool echoflag) {
    scan_echo = echoflag;
 }
 
-
+
 void lexer_useraction (void) {
    if (scan_echo) {
       if (scan_offset == 0) printf (";%5d: ", scan_linenr);

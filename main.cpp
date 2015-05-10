@@ -16,6 +16,7 @@ using namespace std;
 
 #include "stringset.h"
 #include "auxlib.h"
+#include "lyutils.h"
 
 
 extern FILE *yyin;

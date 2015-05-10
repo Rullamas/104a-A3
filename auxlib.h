@@ -6,6 +6,7 @@
 #define __AUXLIB_H__
 
 #include <stdarg.h>
+#include "lyutils.h"
 
 //
 // DESCRIPTION

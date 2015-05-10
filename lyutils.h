@@ -32,6 +32,7 @@ void lexer_badtoken (char* lexeme);
 void lexer_newline (void);
 void lexer_setecho (bool echoflag);
 void lexer_useraction (void);
+void lexer_userinit(void);
 
 astree* new_parseroot (void);
 int yylval_token (int symbol);
@@ -42,5 +43,5 @@ typedef astree* astree_pointer;
 #define YYSTYPE astree_pointer
 #include "yyparse.h"
 
-RCSH("$Id: lyutils.h,v 1.3 2015-04-09 17:45:26-07 - - $")
+
 #endif
