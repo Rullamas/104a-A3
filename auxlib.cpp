@@ -1,6 +1,7 @@
 //Nico Williams and Brandon Rullamas
 //nijowill and brullama
-//Assignment 2 - Lexical Analyzer using flex
+//Assignment 3 - LALR(1) Parser using bison
+
 #include <assert.h>
 #include <errno.h>
 #include <libgen.h>

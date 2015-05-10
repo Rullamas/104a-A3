@@ -1,6 +1,7 @@
 //Nico Williams and Brandon Rullamas
 //nijowill and brullama
-//Assignment 2 - Lexical Analyzer using flex
+//Assignment 3 - LALR(1) Parser using bison
+
 #ifndef __AUXLIB_H__
 #define __AUXLIB_H__
 
