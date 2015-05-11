@@ -36,7 +36,46 @@
 
 %%
 
-program : program token | ;
+program 	: program structdef			{ $$ = adopt1 ($1, $2); }
+			| program function			{ $$ = adopt1 ($1, $2); }
+			| program stmt				{ $$ = adopt1 ($1, $2); }
+			| program error '}'			{ $$ = $1; }
+			| program error ';'			{ $$ = $1; }
+			|							{ $$ = new_parseroot(); }
+			;
+
+structdef 	: TOK_STRUCT TOK_IDENT '{' '}'
+			{ $$ = adopt1 ( $1, adopt1sym ($2, NULL, TOK_TYPEID));
+			  freeast2 ($3, $4); }
+			| ideclist '}'				{ $$ = $1; freeast ($2); }
+			;
+		
+ideclist	: ideclist identdecl ';' { $$ = adopt1 ($1, $2); freeast($3) }
+			| TOK_STRUCT TOK_IDENT '{' identdecl ';'
+			{ $$ = adopt2 ( $1, adopt1sym ($2, NULL, TOK_TYPEID), $4);
+			  freeast2 ($3, $5); }
+			;
+			
+identdecl	: basetype TOK_ARRAY TOK_IDENT { $$ = adopt2 ($2, $1, $3); }
+			| basetype TOK_IDENT		{ $$ = adopt1 ($1, $2); }
+			;
+		
+basetype	: TOK_VOID					{ $$ = $1; }
+			| TOK_BOOL					{ $$ = $1; }
+			| TOK_CHAR					{ $$ = $1; }
+			| TOK_INT					{ $$ = $1; }
+			| TOK_STRING				{ $$ = $1; }
+			| TOK_IDENT					{ $$ = adopt1sym ($1, NULL, TOK_TYPE_ID); }
+			;
+			
+function	: identdecl '(' ')' ';'		{ $$ = adopt2 (new_protonode ($1),
+										  $1, adopt1sym ($2, NULL, TOK_PARAMLIST) );
+										 freeast2 ($3, $4); }
+			| identdecl paramlist ')' ';' { $$ = adopt2 (new_protonode($1), $1, $2);
+										 freeast2 ($3, $4); }
+			| subfunc '}'				{ $$ = $1; freeast ($2); }
+			;
+		
 token   : '(' | ')' | '[' | ']' | '{' | '}' | ';' | ',' | '.'
         | '=' | '+' | '-' | '*' | '/' | '%' | '!'
         | TOK_VOID | TOK_BOOL | TOK_CHAR | TOK_INT | TOK_STRING
@@ -46,24 +85,32 @@ token   : '(' | ')' | '[' | ']' | '{' | '}' | ';' | ',' | '.'
         | TOK_IDENT | TOK_INTCON | TOK_CHARCON | TOK_STRINGCON
         ;
 
-expr	: expr '=' expr			{ $$ = adopt2($2, $1, $3); }
-		| expr TOK_EQ expr		{ $$ = adopt2($2, $1, $3); }
-		| expr TOK_NE expr		{ $$ = adopt2($2, $1, $3); }
-		| expr TOK_LT expr		{ $$ = adopt2($2, $1, $3); }
-		| expr TOK_LE expr		{ $$ = adopt2($2, $1, $3); }
-		| expr TOK_GT expr		{ $$ = adopt2($2, $1, $3); }
-		| expr TOK_GE expr		{ $$ = adopt2($2, $1, $3); }
-		| expr '+' expr			{ $$ = adopt2($2, $1, $3); }
-		| expr '-' expr			{ $$ = adopt2($2, $1, $3); }
-		| expr '*' expr			{ $$ = adopt2($2, $1, $3); }
-		| expr '/' expr			{ $$ = adopt2($2, $1, $3); }
-		| expr '%' expr			{ $$ = adopt2($2, $1, $3); }
-		| '+' expr %prec TOK_POS {$1 -> symbol = TOK_POS;
-								  $$ = adopt1($1, $2);
-								  }
-        | '-' expr %prec TOK_POS {$1 -> symbol = TOK_NEG;
-								  $$ = adopt1($1, $2);
-								  }
+expr	: expr '=' expr				{ $$ = adopt2($2, $1, $3); }
+		| expr TOK_EQ expr			{ $$ = adopt2($2, $1, $3); }
+		| expr TOK_NE expr			{ $$ = adopt2($2, $1, $3); }
+		| expr TOK_LT expr			{ $$ = adopt2($2, $1, $3); }
+		| expr TOK_LE expr			{ $$ = adopt2($2, $1, $3); }
+		| expr TOK_GT expr			{ $$ = adopt2($2, $1, $3); }
+		| expr TOK_GE expr			{ $$ = adopt2($2, $1, $3); }
+		| expr '+' expr				{ $$ = adopt2($2, $1, $3); }
+		| expr '-' expr				{ $$ = adopt2($2, $1, $3); }
+		| expr '*' expr				{ $$ = adopt2($2, $1, $3); }
+		| expr '/' expr				{ $$ = adopt2($2, $1, $3); }
+		| expr '%' expr				{ $$ = adopt2($2, $1, $3); }
+		| '+' expr %prec TOK_POS 	{$1 -> symbol = TOK_POS;
+								     $$ = adopt1($1, $2);
+									}
+        | '-' expr %prec TOK_POS 	{$1 -> symbol = TOK_NEG;
+									 $$ = adopt1($1, $2);
+									}
+		| '!' expr					{ $$ = adopt1($1, $2); }
+		| TOK_ORD expr				{ $$ = adopt1($1, $2); }
+		| TOK_CHR expr				{ $$ = adopt1($1, $2); }
+		| allocator					{ $$ = $1; }
+		| call						{ $$ = $1; }
+		| variable					{ $$ = $1; }
+		| constant					{ $$ = $1; }
+		| '(' expr ')'				{ $$ = $2; }
 		;
 		
 		
