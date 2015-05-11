@@ -115,45 +115,88 @@ stmt		: block						{ $$ = $1; }
 			| expr ';'					{ $$ = $1; freeast ($2); }
 			;
 			
+initdecl	: identdecl '=' expr ';'	{ $$ = adopt1 (adopt1sym ($2, $1, TOK_INITDECL), $3);
+										  freeast ($4); }
+			;
 		
-token   : '(' | ')' | '[' | ']' | '{' | '}' | ';' | ',' | '.'
-        | '=' | '+' | '-' | '*' | '/' | '%' | '!'
-        | TOK_VOID | TOK_BOOL | TOK_CHAR | TOK_INT | TOK_STRING
-        | TOK_IF | TOK_ELSE | TOK_WHILE | TOK_RETURN | TOK_STRUCT
-        | TOK_FALSE | TOK_TRUE | TOK_NULL | TOK_NEW | TOK_ARRAY
-        | TOK_EQ | TOK_NE | TOK_LT | TOK_LE | TOK_GT | TOK_GE
-        | TOK_IDENT | TOK_INTCON | TOK_CHARCON | TOK_STRINGCON
-        ;
+while		: TOK_WHILE '(' expr ')' stmt { $$ = adopt2 ($1, $3, $5);
+											freeast2 ($2, $4); }
+			;
+			
+ifelse		: TOK_IF '(' expr ')' stmt %prec TOK_ELSE
+										{ $$ = adopt2 ($1, $3, $5); freeast2 ($2, $4); }
+			| TOK_IF '(' expr ')' stmt TOK_ELSE stmt
+										{ $$ = adopt2 (adopt1sym ($1, $3, TOK_IFELSE), $5, $7);
+										  freeast3 ($2, $4, $6); }
+			;
+			
+return		: TOK_RETURN expr ';'		{ $$ = adopt1 ($1, $2); freeast ($3);
+			| TOK_RETURN ';'			{ $$ = adopt1sym ($1, NULL, TOK_RETURNVOID);
+										  freeast ($2); }
+			;
 
-expr	: expr '=' expr				{ $$ = adopt2($2, $1, $3); }
-		| expr TOK_EQ expr			{ $$ = adopt2($2, $1, $3); }
-		| expr TOK_NE expr			{ $$ = adopt2($2, $1, $3); }
-		| expr TOK_LT expr			{ $$ = adopt2($2, $1, $3); }
-		| expr TOK_LE expr			{ $$ = adopt2($2, $1, $3); }
-		| expr TOK_GT expr			{ $$ = adopt2($2, $1, $3); }
-		| expr TOK_GE expr			{ $$ = adopt2($2, $1, $3); }
-		| expr '+' expr				{ $$ = adopt2($2, $1, $3); }
-		| expr '-' expr				{ $$ = adopt2($2, $1, $3); }
-		| expr '*' expr				{ $$ = adopt2($2, $1, $3); }
-		| expr '/' expr				{ $$ = adopt2($2, $1, $3); }
-		| expr '%' expr				{ $$ = adopt2($2, $1, $3); }
-		| '+' expr %prec TOK_POS 	{$1 -> symbol = TOK_POS;
-								     $$ = adopt1($1, $2);
-									}
-        | '-' expr %prec TOK_POS 	{$1 -> symbol = TOK_NEG;
-									 $$ = adopt1($1, $2);
-									}
-		| '!' expr					{ $$ = adopt1($1, $2); }
-		| TOK_ORD expr				{ $$ = adopt1($1, $2); }
-		| TOK_CHR expr				{ $$ = adopt1($1, $2); }
-		| allocator					{ $$ = $1; }
-		| call						{ $$ = $1; }
-		| variable					{ $$ = $1; }
-		| constant					{ $$ = $1; }
-		| '(' expr ')'				{ $$ = $2; }
-		;
+expr		: expr '=' expr				{ $$ = adopt2($2, $1, $3); }
+			| expr TOK_EQ expr			{ $$ = adopt2($2, $1, $3); }
+			| expr TOK_NE expr			{ $$ = adopt2($2, $1, $3); }
+			| expr TOK_LT expr			{ $$ = adopt2($2, $1, $3); }
+			| expr TOK_LE expr			{ $$ = adopt2($2, $1, $3); }
+			| expr TOK_GT expr			{ $$ = adopt2($2, $1, $3); }
+			| expr TOK_GE expr			{ $$ = adopt2($2, $1, $3); }
+			| expr '+' expr				{ $$ = adopt2($2, $1, $3); }
+			| expr '-' expr				{ $$ = adopt2($2, $1, $3); }
+			| expr '*' expr				{ $$ = adopt2($2, $1, $3); }
+			| expr '/' expr				{ $$ = adopt2($2, $1, $3); }
+			| expr '%' expr				{ $$ = adopt2($2, $1, $3); }
+			| '+' expr %prec TOK_POS 	{$1 -> symbol = TOK_POS;
+										 $$ = adopt1($1, $2);
+										}
+			| '-' expr %prec TOK_POS 	{$1 -> symbol = TOK_NEG;
+										 $$ = adopt1($1, $2);
+										}
+			| '!' expr					{ $$ = adopt1($1, $2); }
+			| TOK_ORD expr				{ $$ = adopt1($1, $2); }
+			| TOK_CHR expr				{ $$ = adopt1($1, $2); }
+			| allocator					{ $$ = $1; }
+			| call						{ $$ = $1; }
+			| variable					{ $$ = $1; }
+			| constant					{ $$ = $1; }
+			| '(' expr ')'				{ $$ = $2; }
+			;
 		
-		
+allocator	: TOK_NEW TOK_IDENT '(' ')'	{ $$ = adopt1 ($1, adopt1sym ($2, NULL, TOK_TYPEID) );
+										  freeast ($3, $4); }
+			| TOK_NEW TOK_STRING '(' expr ')'
+										{ $$ = adopt1sym ($1, $4, TOK_NEWSTRING);
+										  freeast3 ($2, $3, $5); }
+			| TOK_NEW basetype '[' expr ']'
+										{ $$ = adopt1 (adopt1sym ($1, $2, TOK_NEWARRAY), $4);
+										  freeast2 ($3, $5); }
+			;
+			
+call		: TOK_IDENT '(' ')'			{ $$ = adopt1sym ($2, $1, TOK_CALL);
+										  freeast ($3); }
+			| callque ')'				{ $$ = $1;
+										  freeast ($2); }
+			;
+			
+callque		: callque ',' expr			{ $$ = adopt1 ($1, $3);
+										  freeast ($2); }
+			| TOK_IDENT '(' expr		{ $$ = adopt1 (adopt1sym ($2, $2, TOK_CALL), $3); }
+			;
+			
+variable	: TOK_IDENT					{ $$ = $1; };
+			| expr '[' expr ']'			{ $$ = adopt1 (adopt1sym ($2, $1, TOK_INDEX), $3);
+										  freeast($4); }
+			| expr '.' TOK_IDENT		{ $$ = adopt2 ($2, $1, adopt1sym ($3, NULL, TOK_FIELD) ); }
+			;
+			
+constant	: TOK_INTCON				{ $$ = $1; }
+			| TOK_CHARCON				{ $$ = $1; }
+			| TOK_STRINGCON				{ $$ = $1; }
+			| TOK_FALSE					{ $$ = $1; }
+			| TOK_TRUE					{ $$ = $1; }
+			| TOK_NULL					{ $$ = $1; }
+			;
 		
 %%
 
