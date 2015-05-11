@@ -75,6 +75,46 @@ function	: identdecl '(' ')' ';'		{ $$ = adopt2 (new_protonode ($1),
 										 freeast2 ($3, $4); }
 			| subfunc '}'				{ $$ = $1; freeast ($2); }
 			;
+			
+subfunc		: identcl '(' ')' '{'		{ $$ = adopt3 (new_funcnode ($1), $1,
+										  adopt1sym ($2, NULL, TOK_PARAMLIST),
+										  adopt1ysm ($4, NULL, TOK_BLOCK) );
+										  freeast ($3); }
+			| identdecl '(' ')' blocklist { $$ = adopt3 (new_funcnode ($1), $1,
+											adopt1sym ($2, NULL, TOK_PARAMLIST), $4);
+											freeast ($3); }
+			| identdecl paramlist ')' '{' { $$ = adopt3 (new_funcnode ($1), $1, $2,
+											adopt1sym ($4, NULL, TOK_BLOCK) );
+											freeast ($3); }
+			| identdecl paramlist ')' blocklist
+										  { $$ = adpt3 (new_funcnode ($1), $1, $2, $4);
+										    freeast ($3); }
+			;
+			
+paramlist	: paramlist ',' identdecl 	{ $$ = adopt1 ($1, $3);
+										  freeast ($2); }
+			| '(' identdecl				{ $$ = adopt1sym ($1, $2, TOK_PARAMLIST); }
+			;
+			
+block		: '{' '}'					{ $$ = adopt1sym ($1, NULL, TOK_BLOCK);
+										  freeast ($2); }
+			| blocklist '}'				{ $$ = $1; freeast ($2); }
+			| ';'						{ $$ = $1; }
+			;
+			
+blocklist	: blocklist stmt			{ $$ = adopt1 ($1, $2); }
+			| '{' stmt					{ $$ = adopt1 (adopt1sym ($1, $2, TOK_BLOCK),
+										  NULL); }
+			;
+			
+stmt		: block						{ $$ = $1; }
+			| initdecl					{ $$ = $1; }
+			| while						{ $$ = $1; }
+			| ifelse					{ $$ = $1; }
+			| return					{ $$ = $1; }
+			| expr ';'					{ $$ = $1; freeast ($2); }
+			;
+			
 		
 token   : '(' | ')' | '[' | ']' | '{' | '}' | ';' | ',' | '.'
         | '=' | '+' | '-' | '*' | '/' | '%' | '!'
