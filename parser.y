@@ -76,7 +76,7 @@ function	: identdecl '(' ')' ';'		{ $$ = adopt2 (new_protonode ($1),
 			| subfunc '}'				{ $$ = $1; freeast ($2); }
 			;
 			
-subfunc		: identcl '(' ')' '{'		{ $$ = adopt3 (new_funcnode ($1), $1,
+subfunc		: identdecl '(' ')' '{'		{ $$ = adopt3 (new_funcnode ($1), $1,
 										  adopt1sym ($2, NULL, TOK_PARAMLIST),
 										  adopt1ysm ($4, NULL, TOK_BLOCK) );
 										  freeast ($3); }
@@ -130,7 +130,7 @@ ifelse		: TOK_IF '(' expr ')' stmt %prec TOK_ELSE
 										  freeast3 ($2, $4, $6); }
 			;
 			
-return		: TOK_RETURN expr ';'		{ $$ = adopt1 ($1, $2); freeast ($3);
+return		: TOK_RETURN expr ';'		{ $$ = adopt1 ($1, $2); freeast ($3); }
 			| TOK_RETURN ';'			{ $$ = adopt1sym ($1, NULL, TOK_RETURNVOID);
 										  freeast ($2); }
 			;
