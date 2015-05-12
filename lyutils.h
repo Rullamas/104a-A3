@@ -1,3 +1,4 @@
+
 #ifndef __LYUTILS_H__
 #define __LYUTILS_H__
 
@@ -35,6 +36,16 @@ void lexer_useraction (void);
 void lexer_userinit(void);
 
 astree* new_parseroot (void);
+astree* new_function (void);
+astree* new_leave(void);
+astree* new_protonode (void);
+astree* new_tokenStruct (void);
+astree* new_node (string name);
+astree* new_vardecl(void);
+astree* new_binop(void);
+astree* new_while(void);
+astree* new_if(void);
+astree* new_else(void);
 int yylval_token (int symbol);
 
 void lexer_include (void);

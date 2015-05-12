@@ -11,12 +11,22 @@ using namespace std;
 
 #include "lyutils.h"
 #include "auxlib.h"
+#include "astree.h"
 
 astree* yyparse_astree = NULL;
 int scan_linenr = 1;
 int scan_offset = 0;
+extern FILE *tokfile;
 bool scan_echo = false;
 vector<string> included_filenames;
+astree* new_tree = NULL;
+
+struct{
+    char **filenames;
+    int size;
+    int last_filenr;
+    
+} filename_stack = {NULL, 0,-1};
 
 const string* lexer_filename (int filenr) {
    return &included_filenames.at(filenr);
@@ -77,7 +87,54 @@ astree* new_parseroot (void) {
    return yyparse_astree;
 }
 
-
+astree* new_function (void){
+    new_tree = new_astree(TOK_FUNCTION, filename_stack.last_filenr,scan_linenr ,yyleng, "Function");
+    return new_tree;
+}
+
+astree* new_protonode(void){
+    new_tree = new_astree(TOK_PROTOTYPE, filename_stack.last_filenr,scan_linenr ,yyleng, "");
+    return new_tree;
+}
+
+astree* new_node(string name){
+    new_tree = new_astree(TOK_NONTERMINAL, filename_stack.last_filenr, scan_linenr, yyleng, name.c_str());
+    return new_tree;
+}
+
+astree* new_tokenStruct(void){
+    new_tree = new_astree(TOK_STRUCT, filename_stack.last_filenr,scan_linenr ,yyleng, "Struct");
+    return new_tree;
+}
+astree* new_vardecl(void){
+    new_tree = new_astree(TOK_VARDECL, filename_stack.last_filenr,scan_linenr ,yyleng, "Vardecl");
+    return new_tree;
+}
+astree* new_if(void){
+    new_tree = new_astree(TOK_IF, filename_stack.last_filenr,scan_linenr ,yyleng, "If");
+    return new_tree;
+}
+
+astree* new_else(void){
+    new_tree = new_astree(TOK_ELSE, filename_stack.last_filenr,scan_linenr ,yyleng, "Else");
+    return new_tree;
+}
+
+astree* new_leave(void){
+    new_tree = new_astree(TOK_LEAVE, filename_stack.last_filenr,scan_linenr ,yyleng, "Leave");
+    return new_tree;
+}
+
+astree* new_while(void){
+    new_tree = new_astree(TOK_WHILE, filename_stack.last_filenr,scan_linenr ,yyleng, "While");
+    return new_tree;
+}
+astree* new_binop(void){
+    new_tree = new_astree(TOK_BINOP, filename_stack.last_filenr,scan_linenr ,yyleng, "Binop");
+    return new_tree;
+}
+
+
 void lexer_include (void) {
    lexer_newline();
    char filename[strlen (yytext) + 1];

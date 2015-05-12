@@ -24,7 +24,7 @@ astree* new_astree (int symbol, int filenr, int linenr, int offset,
    return tree;
 }
 
-
+
 astree* adopt1 (astree* root, astree* child) {
    root->children.push_back (child);
    DEBUGF ('a', "%p (%s) adopting %p (%s)\n",
@@ -39,13 +39,28 @@ astree* adopt2 (astree* root, astree* left, astree* right) {
    return root;
 }
 
+astree* adopt3 (astree* root, astree* left, astree* right, astree* middle) {
+    adopt1 (root, left);
+    adopt1 (root, right);
+    adopt1 (root, middle);
+    return root;
+}
+
 astree* adopt1sym (astree* root, astree* child, int symbol) {
    root = adopt1 (root, child);
    root->symbol = symbol;
    return root;
 }
 
-
+astree* adopt2sym (astree* root, astree* left, astree* right, int symbol) {
+    root = adopt2 (root, left, right);
+    root->symbol = symbol;
+    return root;
+}
+astree* adoptsym (astree* root, int symbol) {
+    root->symbol = symbol;
+    return root;
+}
 static void dump_node (FILE* outfile, astree* node) {
    fprintf (outfile, "%p->{%s(%d) %ld:%ld.%03ld \"%s\" [",
             node, get_yytname (node->symbol), node->symbol,
@@ -103,4 +118,3 @@ void free_ast2 (astree* tree1, astree* tree2) {
    free_ast (tree2);
 }
 
-RCSC("$Id: astree.cc,v 1.14 2013-10-10 18:48:18-07 - - $")
