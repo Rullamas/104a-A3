@@ -1,8 +1,6 @@
 #ifndef __LYUTILS_H__
 #define __LYUTILS_H__
 
-// Lex and Yacc interface utility.
-
 #include <stdio.h>
 
 #include "astree.h"
@@ -19,7 +17,6 @@ extern int yydebug;
 extern int yyleng;
 
 int yylex (void);
-//void yyrestart(FILE* file);
 int yyparse (void);
 void yyerror (const char* message);
 int yylex_destroy (void);

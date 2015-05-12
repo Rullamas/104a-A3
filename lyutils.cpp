@@ -91,7 +91,7 @@ astree* new_parseroot (void) {
    return yyparse_astree;
 }
 
-
+
 void scanner_include (void) {
    scanner_newline();
    char filename[strlen (yytext) + 1];
@@ -111,4 +111,3 @@ void scanner_include (void) {
    }
 }
 
-RCSC("$Id: lyutils.cc,v 1.1 2013-10-28 03:34:20-07 - - $")

@@ -46,10 +46,6 @@ astree* adopt1sym (astree* root, astree* child, int symbol) {
 
 
 static void dump_node (FILE* outfile, astree* node) {
-//   fprintf (outfile, "%p->{%s(%d) %ld:%ld.%03ld \"%s\" [",
-//            node, get_yytname (node->symbol), node->symbol,
-//            node->filenr, node->linenr, node->offset,
-//            node->lexinfo->c_str());
    fprintf (outfile, "%3ld  %ld.%03ld  %-3d  %-15s (%s)  ",
             node->filenr, node->linenr, node->offset, node->symbol,
             get_yytname (node->symbol), node->lexinfo->c_str()); 
@@ -60,14 +56,11 @@ static void dump_node (FILE* outfile, astree* node) {
       need_space = true;
       fprintf (outfile, "%p", node->children.at(child));
    }
-//   fprintf (outfile, "]}");
 }
 
 static void dump_astree_rec (FILE* outfile, astree* root,
                              int depth) {
    if (root == NULL) return;
-//   fprintf (outfile, "%*s%s ", depth * 3, "",
-//            root->lexinfo->c_str());
    dump_node (outfile, root);
    fprintf (outfile, "\n");
    for (size_t child = 0; child < root->children.size();
