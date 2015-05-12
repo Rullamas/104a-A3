@@ -1,4 +1,3 @@
-
 #ifndef __LYUTILS_H__
 #define __LYUTILS_H__
 
@@ -20,40 +19,31 @@ extern int yydebug;
 extern int yyleng;
 
 int yylex (void);
+//void yyrestart(FILE* file);
 int yyparse (void);
 void yyerror (const char* message);
 int yylex_destroy (void);
 const char* get_yytname (int symbol);
 bool is_defined_token (int symbol);
 
-const string* lexer_filename (int filenr);
-void lexer_newfilename (const char* filename);
-void lexer_badchar (unsigned char bad);
-void lexer_badtoken (char* lexeme);
-void lexer_newline (void);
-void lexer_setecho (bool echoflag);
-void lexer_useraction (void);
-void lexer_userinit(void);
+const string* scanner_filename (int filenr);
+void scanner_newfilename (const char* filename);
+void scanner_badchar (unsigned char bad);
+void scanner_badident (char* lexeme);
+void scanner_badstring(char* lexeme);
+void scanner_badtoken (char* lexeme);
+void scanner_newline (void);
+void scanner_setecho (bool echoflag);
+void scanner_useraction (void);
 
 astree* new_parseroot (void);
-astree* new_function (void);
-astree* new_leave(void);
-astree* new_protonode (void);
-astree* new_tokenStruct (void);
-astree* new_node (string name);
-astree* new_vardecl(void);
-astree* new_binop(void);
-astree* new_while(void);
-astree* new_if(void);
-astree* new_else(void);
 int yylval_token (int symbol);
 
-void lexer_include (void);
+void scanner_include (void);
 
 typedef astree* astree_pointer;
 #define YYSTYPE astree_pointer
 #include "yyparse.h"
-#include "lyutils.h"
 
 
 #endif

@@ -9,8 +9,7 @@
 #include "auxlib.h"
 #include "lyutils.h"
 
-#define YY_USER_ACTION 	{ lexer_useraction (); }
-#define YY_USER_INIT 	{lexer_userinit (); }
+#define YY_USER_ACTION 	{ scanner_useraction (); }
 #define IGNORE(THING) 	{ }
 
 %}
@@ -83,13 +82,13 @@ TOK_STRINGCON	(\"([^\\"\n]|\\[\\'"0nt])*\")
 "chr"           { return yylval_token (TOK_CHR); }
 "new"           { return yylval_token (TOK_NEW); }
 
-"#".*           { lexer_include(); }
+"#".*           { scanner_include(); }
 [ \t]+          { IGNORE (white space) }
-\n              { lexer_newline(); }
+\n              { scanner_newline(); }
 
-{NOTNUMBER}     { lexer_badtoken (yytext);
+{NOTNUMBER}     { scanner_badtoken (yytext);
                   return yylval_token (TOK_INT); }
 
-.               { lexer_badchar (*yytext); }
+.               { scanner_badchar (*yytext); }
 
 %%

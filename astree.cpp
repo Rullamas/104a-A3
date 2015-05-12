@@ -10,8 +10,8 @@
 #include "stringset.h"
 #include "lyutils.h"
 
-astree* new_astree (int symbol, int filenr, int linenr, int offset,
-                    const char* lexinfo) {
+astree* new_astree (int symbol, int filenr, int linenr,
+                    int offset, const char* lexinfo) {
    astree* tree = new astree();
    tree->symbol = symbol;
    tree->filenr = filenr;
@@ -23,7 +23,6 @@ astree* new_astree (int symbol, int filenr, int linenr, int offset,
            get_yytname (tree->symbol), tree->lexinfo->c_str());
    return tree;
 }
-
 
 astree* adopt1 (astree* root, astree* child) {
    root->children.push_back (child);
@@ -39,49 +38,58 @@ astree* adopt2 (astree* root, astree* left, astree* right) {
    return root;
 }
 
-astree* adopt3 (astree* root, astree* left, astree* right, astree* middle) {
-    adopt1 (root, left);
-    adopt1 (root, right);
-    adopt1 (root, middle);
-    return root;
-}
-
 astree* adopt1sym (astree* root, astree* child, int symbol) {
    root = adopt1 (root, child);
    root->symbol = symbol;
    return root;
 }
 
-astree* adopt2sym (astree* root, astree* left, astree* right, int symbol) {
-    root = adopt2 (root, left, right);
-    root->symbol = symbol;
-    return root;
-}
-astree* adoptsym (astree* root, int symbol) {
-    root->symbol = symbol;
-    return root;
-}
+
 static void dump_node (FILE* outfile, astree* node) {
-   fprintf (outfile, "%p->{%s(%d) %ld:%ld.%03ld \"%s\" [",
-            node, get_yytname (node->symbol), node->symbol,
-            node->filenr, node->linenr, node->offset,
-            node->lexinfo->c_str());
+//   fprintf (outfile, "%p->{%s(%d) %ld:%ld.%03ld \"%s\" [",
+//            node, get_yytname (node->symbol), node->symbol,
+//            node->filenr, node->linenr, node->offset,
+//            node->lexinfo->c_str());
+   fprintf (outfile, "%3ld  %ld.%03ld  %-3d  %-15s (%s)  ",
+            node->filenr, node->linenr, node->offset, node->symbol,
+            get_yytname (node->symbol), node->lexinfo->c_str()); 
    bool need_space = false;
-   for (size_t child = 0; child < node->children.size(); ++child) {
+   for (size_t child = 0; child < node->children.size();
+        ++child) {
       if (need_space) fprintf (outfile, " ");
       need_space = true;
       fprintf (outfile, "%p", node->children.at(child));
    }
-   fprintf (outfile, "]}");
+//   fprintf (outfile, "]}");
 }
 
-static void dump_astree_rec (FILE* outfile, astree* root, int depth) {
+static void dump_astree_rec (FILE* outfile, astree* root,
+                             int depth) {
    if (root == NULL) return;
-   fprintf (outfile, "%*s%s ", depth * 3, "", root->lexinfo->c_str());
+//   fprintf (outfile, "%*s%s ", depth * 3, "",
+//            root->lexinfo->c_str());
    dump_node (outfile, root);
    fprintf (outfile, "\n");
-   for (size_t child = 0; child < root->children.size(); ++child) {
-      dump_astree_rec (outfile, root->children[child], depth + 1);
+   for (size_t child = 0; child < root->children.size();
+        ++child) {
+      dump_astree_rec (outfile, root->children[child],
+                       depth + 1);
+   }
+}
+
+static void dump_astree_rec_new (FILE* outfile, astree* root, int depth) {
+   if (root == NULL) return;
+   int i = 0;
+      while (i < depth){
+         fprintf(outfile, "   ");
+         i++;
+      }
+      fprintf(outfile, "%s", get_yytname(root->symbol));
+      if(strcmp(root->lexinfo->c_str(), "") != 0)
+         fprintf(outfile, " (%s)", root->lexinfo->c_str());
+      fprintf(outfile, "\n");
+   for (size_t child = 0; child < root->children.size(); ++child){
+      dump_astree_rec_new (outfile, root->children[child], depth +1);
    }
 }
 
@@ -90,12 +98,18 @@ void dump_astree (FILE* outfile, astree* root) {
    fflush (NULL);
 }
 
-void yyprint (FILE* outfile, unsigned short toknum, astree* yyvaluep) {
-   DEBUGF ('f', "toknum = %d, yyvaluep = %p\n", toknum, yyvaluep);
+void dump_astree_new(FILE* outfile, astree*root) {
+   dump_astree_rec_new (outfile, root, 0);
+   fflush (NULL);
+}
+
+void yyprint (FILE* outfile, unsigned short toknum,
+              astree* yyvaluep) {
    if (is_defined_token (toknum)) {
       dump_node (outfile, yyvaluep);
    }else {
-      fprintf (outfile, "%s(%d)\n", get_yytname (toknum), toknum);
+      fprintf (outfile, "%s(%d)\n",
+               get_yytname (toknum), toknum);
    }
    fflush (NULL);
 }
@@ -107,8 +121,8 @@ void free_ast (astree* root) {
       root->children.pop_back();
       free_ast (child);
    }
-   DEBUGF ('f', "free [%X]-> %d:%d.%d: %s: \"%s\")\n",
-           (uintptr_t) root, root->filenr, root->linenr, root->offset,
+   DEBUGF ('f', "free [%p]-> %d:%d.%d: %s: \"%s\")\n",
+           root, root->filenr, root->linenr, root->offset,
            get_yytname (root->symbol), root->lexinfo->c_str());
    delete root;
 }
