@@ -13,7 +13,7 @@
 #include <wait.h>
 
 #include "auxlib.h"
-#include "lyutils.h"
+
 
 static int exitstatus = EXIT_SUCCESS;
 static const char* execname = NULL;

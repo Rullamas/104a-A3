@@ -150,7 +150,7 @@ gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
 	  }  
 //      printf ("command=\"%s\"\n", command.c_str());
       yyin = popen (command.c_str(), "r");
-      if (pipe == NULL) {
+      if (yyin == NULL) {
         syserrprintf (command.c_str());
       }else{
         for(;;){

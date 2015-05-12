@@ -53,6 +53,7 @@ void lexer_include (void);
 typedef astree* astree_pointer;
 #define YYSTYPE astree_pointer
 #include "yyparse.h"
+#include "lyutils.h"
 
 
 #endif
