@@ -5,7 +5,6 @@
 #include <vector>
 using namespace std;
 
-#include "lyutils.h"
 #include "auxlib.h"
 
 struct astree {
@@ -15,27 +14,18 @@ struct astree {
    size_t offset;            // offset of token with current line
    const string* lexinfo;    // pointer to lexical information
    vector<astree*> children; // children of this n-way node
-   astree (int symbol, int filenr, int linenr,
-           int offset, const char* clexinfo);
 };
 
-// Append one child to the vector of children.
+
+astree* new_astree (int symbol, int filenr, int linenr, int offset,
+                    const char* lexinfo);
 astree* adopt1 (astree* root, astree* child);
-
-// Append two children to the vector of children.
 astree* adopt2 (astree* root, astree* left, astree* right);
-
-// Dump an astree to a FILE.
+astree* adopt1sym (astree* root, astree* child, int symbol);
 void dump_astree (FILE* outfile, astree* root);
-
-// Debug print an astree.
-void yyprint (FILE* outfile, unsigned short toknum,
-              astree* yyvaluep);
-
-// Recursively free an astree.
+void yyprint (FILE* outfile, unsigned short toknum, astree* yyvaluep);
 void free_ast (astree* tree);
-
-// Recursively free two astrees.
 void free_ast2 (astree* tree1, astree* tree2);
 
+RCSH("$Id: astree.h,v 1.3 2013-09-20 12:23:31-07 - - $")
 #endif
