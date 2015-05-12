@@ -45,18 +45,19 @@ program 	: program structdef			{ $$ = adopt1 ($1, $2); }
 			;
 
 structdef 	: TOK_STRUCT TOK_IDENT '{' '}'
-			{ $$ = adopt1 ( $1, adopt1sym ($2, NULL, TOK_TYPEID));
-			  freeast2 ($3, $4); }
+										{ $$ = adopt1 ( $1, adopt1sym ($2, NULL, TOK_TYPEID));
+										  freeast2 ($3, $4); }
 			| ideclist '}'				{ $$ = $1; freeast ($2); }
 			;
 		
-ideclist	: ideclist identdecl ';' { $$ = adopt1 ($1, $2); freeast($3) }
+ideclist	: ideclist identdecl ';' 	{ $$ = adopt1 ($1, $2); freeast($3) }
 			| TOK_STRUCT TOK_IDENT '{' identdecl ';'
-			{ $$ = adopt2 ( $1, adopt1sym ($2, NULL, TOK_TYPEID), $4);
-			  freeast2 ($3, $5); }
+										{ $$ = adopt2 ( $1, adopt1sym ($2, NULL, TOK_TYPEID), $4);
+										  freeast2 ($3, $5); }
 			;
 			
-identdecl	: basetype TOK_ARRAY TOK_IDENT { $$ = adopt2 ($2, $1, $3); }
+identdecl	: basetype TOK_ARRAY TOK_IDENT 
+										{ $$ = adopt2 ($2, $1, $3); }
 			| basetype TOK_IDENT		{ $$ = adopt1 ($1, $2); }
 			;
 		
@@ -70,9 +71,10 @@ basetype	: TOK_VOID					{ $$ = $1; }
 			
 function	: identdecl '(' ')' ';'		{ $$ = adopt2 (new_protonode ($1),
 										  $1, adopt1sym ($2, NULL, TOK_PARAMLIST) );
-										 freeast2 ($3, $4); }
-			| identdecl paramlist ')' ';' { $$ = adopt2 (new_protonode($1), $1, $2);
-										 freeast2 ($3, $4); }
+										  freeast2 ($3, $4); }
+			| identdecl paramlist ')' ';' 
+										{ $$ = adopt2 (new_protonode($1), $1, $2);
+										  freeast2 ($3, $4); }
 			| subfunc '}'				{ $$ = $1; freeast ($2); }
 			;
 			
@@ -80,15 +82,17 @@ subfunc		: identdecl '(' ')' '{'		{ $$ = adopt3 (new_funcnode ($1), $1,
 										  adopt1sym ($2, NULL, TOK_PARAMLIST),
 										  adopt1ysm ($4, NULL, TOK_BLOCK) );
 										  freeast ($3); }
-			| identdecl '(' ')' blocklist { $$ = adopt3 (new_funcnode ($1), $1,
-											adopt1sym ($2, NULL, TOK_PARAMLIST), $4);
-											freeast ($3); }
-			| identdecl paramlist ')' '{' { $$ = adopt3 (new_funcnode ($1), $1, $2,
-											adopt1sym ($4, NULL, TOK_BLOCK) );
-											freeast ($3); }
+			| identdecl '(' ')' blocklist 
+										{ $$ = adopt3 (new_funcnode ($1), $1,
+										  adopt1sym ($2, NULL, TOK_PARAMLIST), $4);
+										  freeast ($3); }
+			| identdecl paramlist ')' '{' 
+										{ $$ = adopt3 (new_funcnode ($1), $1, $2,
+										  adopt1sym ($4, NULL, TOK_BLOCK) );
+										  freeast ($3); }
 			| identdecl paramlist ')' blocklist
-										  { $$ = adpt3 (new_funcnode ($1), $1, $2, $4);
-										    freeast ($3); }
+										{ $$ = adpt3 (new_funcnode ($1), $1, $2, $4);
+										  freeast ($3); }
 			;
 			
 paramlist	: paramlist ',' identdecl 	{ $$ = adopt1 ($1, $3);
@@ -119,8 +123,9 @@ initdecl	: identdecl '=' expr ';'	{ $$ = adopt1 (adopt1sym ($2, $1, TOK_INITDECL
 										  freeast ($4); }
 			;
 		
-while		: TOK_WHILE '(' expr ')' stmt { $$ = adopt2 ($1, $3, $5);
-											freeast2 ($2, $4); }
+while		: TOK_WHILE '(' expr ')' stmt 
+										{ $$ = adopt2 ($1, $3, $5);
+										  freeast2 ($2, $4); }
 			;
 			
 ifelse		: TOK_IF '(' expr ')' stmt %prec TOK_ELSE
@@ -147,11 +152,11 @@ expr		: expr '=' expr				{ $$ = adopt2($2, $1, $3); }
 			| expr '*' expr				{ $$ = adopt2($2, $1, $3); }
 			| expr '/' expr				{ $$ = adopt2($2, $1, $3); }
 			| expr '%' expr				{ $$ = adopt2($2, $1, $3); }
-			| '+' expr %prec TOK_POS 	{$1 -> symbol = TOK_POS;
-										 $$ = adopt1($1, $2);
+			| '+' expr %prec TOK_POS 	{ $1 -> symbol = TOK_POS;
+										  $$ = adopt1($1, $2);
 										}
-			| '-' expr %prec TOK_POS 	{$1 -> symbol = TOK_NEG;
-										 $$ = adopt1($1, $2);
+			| '-' expr %prec TOK_POS 	{ $1 -> symbol = TOK_NEG;
+										  $$ = adopt1($1, $2);
 										}
 			| '!' expr					{ $$ = adopt1($1, $2); }
 			| TOK_ORD expr				{ $$ = adopt1($1, $2); }
