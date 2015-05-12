@@ -20,6 +20,8 @@ using namespace std;
 
 
 extern FILE *yyin;
+extern int yylex(void);
+extern int yyparse(void);
 extern int yy_flex_debug
 const string CPP = "/usr/bin/cpp";
 const size_t LINESIZE = 1024;
@@ -153,11 +155,12 @@ gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
       if (yyin == NULL) {
         syserrprintf (command.c_str());
       }else{
-        for(;;){
-          int token = yylex();
-          if (token == YYEOF){
-            return;
-          } 
+ //       for(;;){
+ //         int token = yylex();
+ //         if (token == YYEOF){
+ //           return;
+ //         }
+          yyparse();       
         }
         pclose(tokFile);
       }
